@@ -25,7 +25,7 @@ It uses **Groq’s LLaMA 3.1 model** as the reasoning engine and integrates with
 Clone the repository and install dependencies:
 
 ```bash
-git clone https://github.com/your-username/langchain-chat-search.git
+https://github.com/SnehalSolawala/Groq-LangChain-Search-Agent.git
 cd langchain-chat-search
 pip install -r requirements.txt
 ```
