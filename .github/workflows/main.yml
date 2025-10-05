@@ -1,4 +1,4 @@
-name: Sync GitHub to Hugging Face Space
+name: Push GitHub repo to Hugging Face Space
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  sync-to-hub:
+  push-to-hf:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout GitHub repo
@@ -26,30 +26,17 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
 
-      - name: Add Hugging Face Remote
+      - name: Add HF Remote
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          if git remote | grep -q hf; then
-            echo "HF remote already exists"
-          else
-            git remote add hf https://Snehalkhalasi:$HF_TOKEN@huggingface.co/spaces/Snehalkhalasi/LLM1
-          fi
+          git remote remove hf || true
+          git remote add hf https://Snehalkhalasi:$HF_TOKEN@huggingface.co/spaces/Snehalkhalasi/LLM1
 
-      - name: Pull latest from HF Space
+      - name: Push all GitHub code to HF
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          git fetch hf
-          git reset --hard hf/main || echo "No existing commits to reset"
-
-      - name: Add and Commit All Files
-        run: |
-          git add .
+          git add --all
           git commit -m "Sync GitHub repo to HF Space" || echo "No changes to commit"
-
-      - name: Push to Hugging Face Space
-        env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: |
           git push hf main --force
