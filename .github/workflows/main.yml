@@ -1,4 +1,4 @@
-name: Sync to Hugging Face hub
+name: Sync GitHub to Hugging Face Space
 
 on:
   push:
@@ -9,7 +9,8 @@ jobs:
   sync-to-hub:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout GitHub repo
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
           lfs: true
@@ -25,7 +26,7 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
 
-      - name: Add HF Remote
+      - name: Add Hugging Face Remote
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
@@ -42,10 +43,13 @@ jobs:
           git fetch hf
           git reset --hard hf/main || echo "No existing commits to reset"
 
-      - name: Commit and Push changes
+      - name: Add and Commit All Files
+        run: |
+          git add .
+          git commit -m "Sync GitHub repo to HF Space" || echo "No changes to commit"
+
+      - name: Push to Hugging Face Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          git add .
-          git diff-index --quiet HEAD || git commit -m "Update files from GitHub Actions"
           git push hf main --force
