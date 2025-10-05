@@ -27,7 +27,7 @@ Try more LangChain 🤝 Streamlit Agent examples at [github.com/langchain-ai/str
 """
 
 
-#side bar for settingss
+#side bar for settingsss
 st.sidebar.title("Settings")
 api_key = st.sidebar.text_input("Enter GROQ API KEY : ", type ="password")
 
