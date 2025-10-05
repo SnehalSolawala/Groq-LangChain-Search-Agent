@@ -14,21 +14,38 @@ jobs:
           fetch-depth: 0
           lfs: true
 
+      - name: Install Git LFS
+        run: |
+          sudo apt-get update
+          sudo apt-get install git-lfs -y
+          git lfs install
+
       - name: Configure Git
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
 
+      - name: Add HF Remote
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          if git remote | grep -q hf; then
+            echo "HF remote already exists"
+          else
+            git remote add hf https://Snehalkhalasi:$HF_TOKEN@huggingface.co/spaces/Snehalkhalasi/LLM1
+          fi
+
       - name: Pull latest from HF Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          git remote add hf https://Snehalkhalasi:$HF_TOKEN@huggingface.co/spaces/Snehalkhalasi/LLM1
           git fetch hf
-          git reset --hard hf/main || echo "No existing commits"
+          git reset --hard hf/main || echo "No existing commits to reset"
 
-      - name: Push to Hugging Face Space
+      - name: Commit and Push changes
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
+          git add .
+          git diff-index --quiet HEAD || git commit -m "Update files from GitHub Actions"
           git push hf main --force
