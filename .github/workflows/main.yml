@@ -1,42 +1,20 @@
-name: Push GitHub repo to Hugging Face Space
-
+name: Sync to Hugging Face hub
 on:
   push:
     branches: [main]
+
+  # to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
-  push-to-hf:
+  sync-to-hub:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout GitHub repo
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
           lfs: true
-
-      - name: Install Git LFS
-        run: |
-          sudo apt-get update
-          sudo apt-get install git-lfs -y
-          git lfs install
-
-      - name: Configure Git
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-
-      - name: Add HF Remote
+      - name: Push to hub
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: |
-          git remote remove hf || true
-          git remote add hf https://Snehalkhalasi:$HF_TOKEN@huggingface.co/spaces/Snehalkhalasi/LLM1
-
-      - name: Push all GitHub code to HF
-        env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: |
-          git add --all
-          git commit -m "Sync GitHub repo to HF Space" || echo "No changes to commit"
-          git push hf main --force
+        run: git push https://Snehalkhalasi:$HF_TOKEN@huggingface.co/spaces/Snehalkhalasi/SPACE_NAME main
